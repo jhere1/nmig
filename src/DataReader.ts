@@ -42,6 +42,7 @@ import {
     MessageToDataWriter,
     CopyStreamSerializableParams,
 } from './Types';
+import { performance } from 'perf_hooks';
 
 /**
  * Processes incoming messages from the DataPipeManager.
@@ -60,7 +61,21 @@ process.on('message', async (signal: MessageToDataReader): Promise<void> => {
     const isRecoveryMode: boolean = await dataTransferred(conv, chunk._id);
 
     if (!isRecoveryMode) {
-        await populateTable(conv, chunk);
+        const collectTimingStats: Boolean = config.collect_timing_stats ?? false;
+        if (collectTimingStats) {
+            const startTime = performance.now();
+            await populateTable(conv, chunk);
+            const endTime = performance.now();
+            const elapsedTime = Math.round((endTime - startTime) / 1000);
+            await log(
+                conv,
+                `\t--[NMIG loadData] Loading the data into "${conv._schema}"."${chunk._tableName}" table took ${elapsedTime} seconds`,
+            ); 
+        }
+        else
+        {
+            await populateTable(conv, chunk);
+        }
         return;
     }
 
