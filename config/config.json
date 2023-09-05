@@ -14,11 +14,11 @@
     "source" : {
         "host"             : "127.0.0.1",
         "port"             : 3306,
-        "database"         : "test_db",
+        "database"         : "ezd_test-org",
         "charset"          : "utf8mb4",
         "supportBigNumbers": true,
         "user"             : "root",
-        "password"         : "0123456789"
+        "password"         : ""
     },
 
     "target_description" : [
@@ -31,10 +31,10 @@
     "target" : {
         "host"     : "127.0.0.1",
         "port"     : 5432,
-        "database" : "test_db",
+        "database" : "ezd_test-org",
         "charset"  : "UTF8",
-        "user"     : "postgres",
-        "password" : "0123456789"
+        "user"     : "ccms_app_user",
+        "password" : "123"
     },
 
     "max_each_db_connection_pool_size_description" : [
@@ -69,7 +69,7 @@
         "than a number of logical CPU cores of the machine running Nmig.",
         "If greater number chosen - Nmig will run one loader process per each available CPU core."
     ],
-    "number_of_simultaneously_running_loader_processes": "DEFAULT",
+    "number_of_simultaneously_running_loader_processes": 1,
 
     "loader_max_old_space_size_description" : [
         "V8 memory limit of the 'loader process'.",
@@ -97,25 +97,53 @@
         "A name of the schema, that will contain all migrated tables.",
         "If not supplied, then a new schema will be created automatically."
     ],
-    "schema" : "public",
+    "schema" : "ccms",
 
     "exclude_tables_description": [
         "List (Array) of tables, that will not be migrated.",
         "By default, nmig will migrate all tables."
     ],
-    "exclude_tables": [],
+    "exclude_tables": [
+        "add_reference_to_approval_activity",
+        "add_reference_to_approval_activity_selected_reference",
+        "approval_request",
+        "approval_request_file_when_closed",
+        "approval_request_reference_file",
+        "approve_topic_activity",
+        "close_approval_request_activity",
+        "commit_note",
+        "commit_note_commits",
+        "edit_approval_request_activity",
+        "finalize_approvals_activity",
+        "issue_approval_request_activity",
+        "metadata_category",
+        "metadata_field",
+        "metadata_field_category_assoc",
+        "project",
+        "project_documents",
+        "remove_reference_from_approval_activity",
+        "remove_reference_from_approval_activity_selected_reference",
+
+        "schema_version",
+        
+        "heretto_on_update_tasks",
+
+        "links",
+        "revision_metadata_limit"
+    ],
 
     "include_tables_description": [
         "List (Array) of tables, that will be migrated.",
         "By default, nmig will migrate all tables."
     ],
-    "include_tables": [],
+    "include_tables": [
+    ],
 
     "migrate_only_data_description" : [
         "In order to skip schema migration, and just migrate data into a preset tables",
         " - set this parameter true."
     ],
-    "migrate_only_data" : false,
+    "migrate_only_data" : true,
 
     "delimiter_description" : [
         "Specifies the character, that separates columns within each record.",

@@ -86,7 +86,12 @@ export default (arrTableColumns: any[], mysqlVersion: number, encoding: Encoding
             // Apply HEX(ST_AsWKB(...)) due to the issue, described at https://bugs.mysql.com/bug.php?id=69798
             strRetVal += `HEX(${wkbFunc}(\`${field}\`)) AS \`${field}\`,`;
         } else if (isBinary(type)) {
-            strRetVal += `HEX(\`${field}\`) AS \`${field}\`,`;
+            // TODO: remove hard coded column names
+            if (field == "checksum" || field == "normalized_checksum") {
+                strRetVal += `concat('\\\\x', HEX(\`${field}\`)) AS \`${field}\`,`;
+            } else {
+                strRetVal += `HEX(\`${field}\`) AS \`${field}\`,`;
+            }
         } else if (isBit(type)) {
             strRetVal += `BIN(\`${field}\`) AS \`${field}\`,`;
         } else if (isDateTime(type)) {

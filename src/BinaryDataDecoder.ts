@@ -63,8 +63,10 @@ export default async (conversion: Conversion): Promise<Conversion> => {
         const columnName: string = row.column_name;
         params.sql = `UPDATE ${conversion._schema}."${tableName}"
                 SET "${columnName}" = DECODE(ENCODE("${columnName}", 'escape'), 'hex');`;
-
-        await DBAccess.query(params);
+        
+        // TODO: skipping for now, bytea could have length limit, resolving during COPY instead
+        //   ignoring geometry datatype, we're not using it for now.
+        //await DBAccess.query(params);
     };
 
     const decodePromises: Promise<void>[] = result.data.rows.map(_cb);

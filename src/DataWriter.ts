@@ -30,6 +30,10 @@ import Conversion from './Conversion';
 import DBAccess from './DBAccess';
 import DataPipeManager from './DataPipeManager';
 
+// process.stdin.on('data', (chunk) => {
+//     console.log(chunk.toString()); 
+//   });
+
 /**
  * After accepting the message, initializes data streaming from current process stdin into PostgreSQL (via COPY).
  */

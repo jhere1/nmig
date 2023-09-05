@@ -73,21 +73,21 @@ export default async (conversion: Conversion): Promise<Conversion> => {
     const haveTablesLoaded: boolean = await migrationStateManager.get(conversion, 'tables_loaded');
     let sql = `SHOW FULL TABLES IN \`${conversion._mySqlDbName}\` WHERE 1 = 1`;
 
-    if (conversion._includeTables.length !== 0) {
-        const tablesToInclude: string = conversion._includeTables
-            .map((table: string): string => `"${table}"`)
-            .join(',');
+    // if (conversion._includeTables.length !== 0) {
+    //     const tablesToInclude: string = conversion._includeTables
+    //         .map((table: string): string => `"${table}"`)
+    //         .join(',');
 
-        sql += ` AND "Tables_in_${conversion._mySqlDbName}" IN(${tablesToInclude})`;
-    }
+    //     sql += ` AND "Tables_in_${conversion._mySqlDbName}" IN(${tablesToInclude})`;
+    // }
 
-    if (conversion._excludeTables.length !== 0) {
-        const tablesToExclude: string = conversion._excludeTables
-            .map((table: string): string => `"${table}"`)
-            .join(',');
+    // if (conversion._excludeTables.length !== 0) {
+    //     const tablesToExclude: string = conversion._excludeTables
+    //         .map((table: string): string => `"${table}"`)
+    //         .join(',');
 
-        sql += ` AND "Tables_in_${conversion._mySqlDbName}" NOT IN(${tablesToExclude})`;
-    }
+    //     sql += ` AND "Tables_in_${conversion._mySqlDbName}" NOT IN(${tablesToExclude})`;
+    // }
 
     const params: DBAccessQueryParams = {
         conversion: conversion,
@@ -106,10 +106,12 @@ export default async (conversion: Conversion): Promise<Conversion> => {
     result.data.forEach((row: any) => {
         let relationName: string = row[`Tables_in_${conversion._mySqlDbName}`];
 
-        if (
-            row.Table_type === 'BASE TABLE' &&
-            conversion._excludeTables.indexOf(relationName) === -1
-        ) {
+        if (conversion._excludeTables.indexOf(relationName) >= 0
+        || (conversion._includeTables.length > 0 
+            && (conversion._includeTables.indexOf(relationName) === -1))) {
+                return;  // continue
+            }
+        if (row.Table_type === 'BASE TABLE') {
             relationName = extraConfigProcessor.getTableName(conversion, relationName, false);
             conversion._tablesToMigrate.push(relationName);
 

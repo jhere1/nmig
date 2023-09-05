@@ -27,7 +27,7 @@ import { PoolClient } from 'pg';
 import { PoolConnection } from 'mysql2';
 const { Transform: Json2CsvTransform } = require('json2csv'); // No declaration file for module "json2csv".
 
-import { log } from './FsOps';
+import { log, generateError } from './FsOps';
 import { dataTransferred } from './ConsistencyEnforcer';
 import * as extraConfigProcessor from './ExtraConfigProcessor';
 import DataPipeManager from './DataPipeManager';
@@ -58,7 +58,10 @@ process.on('message', async (signal: MessageToDataReader): Promise<void> => {
         `\t--[NMIG loadData] Loading the data into "${conv._schema}"."${chunk._tableName}" table...`,
     );
 
-    const isRecoveryMode: boolean = await dataTransferred(conv, chunk._id);
+    let isRecoveryMode: boolean = await dataTransferred(conv, chunk._id);
+    // TODO: hard coding this for now, we want to delete and populate table
+    isRecoveryMode = false;
+
 
     if (!isRecoveryMode) {
         const collectTimingStats: Boolean = config.collect_timing_stats ?? false;
@@ -103,6 +106,14 @@ const populateTable = async (conv: Conversion, chunk: any): Promise<void> => {
 
     if (conv.shouldMigrateOnlyData()) {
         originalSessionReplicationRole = await DataPipeManager.disablePgTriggers(conv, client);
+        let deleteSql: string = `delete from "${ conv._schema }"."${ tableName }";`;
+    
+        try {
+            console.log(`in data loader... ${ deleteSql }`);
+            await client.query(deleteSql);
+        } catch (error) {
+            generateError(conv, `\t--[DataLoader::deleteData] ${ error }`, deleteSql);
+        }
     }
 
     const json2csvStream: DuplexStream = await getJson2csvStream(conv, originalTableName);
