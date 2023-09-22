@@ -18,7 +18,7 @@
         "charset"          : "utf8mb4",
         "supportBigNumbers": true,
         "user"             : "root",
-        "password"         : ""
+        "password"         : "root"
     },
 
     "target_description" : [
@@ -34,7 +34,7 @@
         "database" : "ezd_test-org",
         "charset"  : "UTF8",
         "user"     : "ccms_app_user",
-        "password" : "123"
+        "password" : "ccms_app_user"
     },
 
     "max_each_db_connection_pool_size_description" : [
@@ -79,7 +79,7 @@
         "1. Any positive integer, representing memory limit (in MB).",
         "2. 'DEFAULT', representing V8 default memory limit of your current hardware."
     ],
-    "loader_max_old_space_size" : "DEFAULT",
+    "loader_max_old_space_size" : 3700,
 
     "streams_high_water_mark_description": [
         "Buffer level when stream.write() starts returning false.",
@@ -125,8 +125,6 @@
         "remove_reference_from_approval_activity_selected_reference",
 
         "schema_version",
-        
-        "heretto_on_update_tasks",
 
         "links",
         "revision_metadata_limit"
